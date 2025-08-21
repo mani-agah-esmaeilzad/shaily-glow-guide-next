@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { HeroSection } from '@/components/hero-section';
-import { Dashboard } from '@/app/dashboard/page'; // مسیر کامپوننت داشبورد را به‌روز کنید
+import { Dashboard } from '@/app/dashboard/Dashboard'; // مسیر کامپوننت داشبورد را به‌روز کنید
 import { useRouter } from 'next/navigation';
 
 const IndexPage = () => {

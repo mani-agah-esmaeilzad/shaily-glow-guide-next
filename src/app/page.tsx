@@ -6,7 +6,7 @@ import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 // کامپوننت جدید را ایمپورت کنید
 import { LandingPage } from '@/components/landing-page';
-import { Dashboard } from '@/app/dashboard/page';
+import { Dashboard } from '@/app/dashboard/Dashboard';
 import { useRouter } from 'next/navigation';
 
 const IndexPage = () => {

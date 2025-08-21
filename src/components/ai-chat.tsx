@@ -1,13 +1,17 @@
+// src/components/ai-chat.tsx
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send, X, PlusCircle } from 'lucide-react';
+import { Loader2, Send, X, PlusCircle, Sparkles, Bot } from 'lucide-react';
 import { GoogleGenerativeAI, ChatSession } from '@google/generative-ai';
 import type { UserProfile, Task } from '@/types';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 // رابط برای پیام‌های چت
 interface Message {
@@ -76,28 +80,29 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
   const chatSessionRef = useRef<ChatSession | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to the latest message
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [messages, suggestedTasks]);
-
+  }, [messages, suggestedTasks, isLoading]);
+  
   const handleAddSuggestion = () => {
     if (suggestedTasks) {
       onAddTasks(suggestedTasks);
-      setSuggestedTasks(null); // Clear suggestion after adding
+      setSuggestedTasks(null); 
     }
   };
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
-    setSuggestedTasks(null); // Clear previous suggestions
+    if (!input.trim() || isLoading) return;
+    setSuggestedTasks(null);
 
     const userMessage: Message = {
       id: Date.now().toString(),
       text: input.trim(),
       sender: 'user',
-      timestamp: new Date().toLocaleTimeString('fa-IR'),
+      timestamp: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -131,7 +136,6 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
       const result = await chat.sendMessage(userMessage.text);
       let text = result.response.text();
 
-      // Extract and parse suggestion
       const suggestionRegex = /<SUGGESTION>([\s\S]*?)<\/SUGGESTION>/;
       const match = text.match(suggestionRegex);
 
@@ -139,7 +143,6 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
         try {
           const parsedTasks = JSON.parse(match[1]);
           setSuggestedTasks(parsedTasks);
-          // Remove the suggestion block from the main text
           text = text.replace(suggestionRegex, '').trim();
         } catch (e) {
           console.error("Failed to parse suggestion JSON:", e);
@@ -150,10 +153,10 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
         id: Date.now().toString() + '-ai',
         text: text,
         sender: 'ai',
-        timestamp: new Date().toLocaleTimeString('fa-IR'),
+        timestamp: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
       };
       
-      if (text) { // Only add message if there is text left
+      if (text) {
         setMessages((prev) => [...prev, aiMessage]);
       }
 
@@ -161,9 +164,9 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
       console.error('Error sending message to Gemini:', error);
       const errorMessage: Message = {
         id: Date.now().toString() + '-error',
-        text: 'متأسفانه در ارتباط با هوش مصنوعی خطایی رخ داد.',
+        text: 'متأسفانه در ارتباط با هوش مصنوعی خطایی رخ داد. لطفاً دوباره تلاش کنید.',
         sender: 'ai',
-        timestamp: new Date().toLocaleTimeString('fa-IR'),
+        timestamp: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -171,7 +174,7 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -181,66 +184,87 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl h-[600px] flex flex-col">
-        <CardHeader className="border-b">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-2xl h-[90vh] max-h-[700px] flex flex-col shadow-2xl rounded-2xl">
+        <CardHeader className="border-b bg-slate-50 rounded-t-2xl">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">🤖 مشاوره با شایلی</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
+            <div className='flex items-center gap-3'>
+                <div className='w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center'>
+                    <Bot className="w-7 h-7 text-primary"/>
+                </div>
+                <div>
+                    <CardTitle>مشاوره با شایلی</CardTitle>
+                    <CardDescription className='mt-1'>دستیار هوشمند پوست و مو</CardDescription>
+                </div>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
+              <X className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>
         
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-            <div className="space-y-4">
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+          <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+            <div className="space-y-6">
               {messages.length === 0 && (
-                <div className="text-center text-muted-foreground py-8">
-                  <p className="text-lg mb-2">سلام! من شایلی هستم 👋</p>
-                  <p className="text-sm">درباره پوست و موهایت از من بپرس</p>
+                <div className="text-center text-muted-foreground py-16">
+                  <Sparkles className="mx-auto h-12 w-12 text-primary/50 mb-4" />
+                  <p className="text-lg font-medium">سلام! من شایلی هستم.</p>
+                  <p className="text-sm mt-2">می‌توانید سوالات خود را در مورد پوست و مو از من بپرسید.</p>
                 </div>
               )}
               
               {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+                <div key={message.id} className={cn("flex items-end gap-3", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                  {message.sender === 'ai' && (
+                    <Avatar className='h-8 w-8'>
+                      <AvatarFallback className='bg-primary/20 text-primary'>
+                        <Bot size={18}/>
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
+                    className={cn(
+                      "max-w-[80%] rounded-2xl p-4",
                       message.sender === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
-                    }`}
+                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                        : 'bg-slate-100 text-foreground rounded-bl-none'
+                    )}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                    <p className="text-xs opacity-70 mt-1 text-right">{message.timestamp}</p>
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
+                    <p className="text-xs opacity-60 mt-2 text-left">{message.timestamp}</p>
                   </div>
                 </div>
               ))}
               
               {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-muted rounded-lg p-3">
+                <div className="flex items-end gap-3 justify-start">
+                   <Avatar className='h-8 w-8'>
+                      <AvatarFallback className='bg-primary/20 text-primary'>
+                        <Bot size={18}/>
+                      </AvatarFallback>
+                    </Avatar>
+                  <div className="bg-slate-100 rounded-2xl rounded-bl-none p-4">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">شایلی در حال تایپ است...</span>
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      <span className="text-sm text-muted-foreground">در حال نوشتن...</span>
                     </div>
                   </div>
                 </div>
               )}
 
               {suggestedTasks && (
-                <div className="bg-primary/10 border-l-4 border-primary p-4 rounded-r-lg">
-                    <h4 className="font-semibold mb-2">پیشنهاد شایلی برای روتین شما:</h4>
-                    <ul className="space-y-1 list-disc list-inside text-sm">
+                <div className="border-t pt-4">
+                    <h4 className="font-semibold mb-3 text-center">✨ پیشنهاد شایلی برای روتین شما:</h4>
+                    <ul className="space-y-2">
                         {suggestedTasks.map((task, index) => (
-                            <li key={index}>{task.title} ({task.time === 'morning' ? 'صبح' : 'شب'})</li>
+                            <li key={index} className='bg-primary/5 p-3 rounded-lg text-sm font-medium text-primary-foreground'>
+                                <span className='text-primary'>{task.title}</span> ({task.time === 'morning' ? 'صبح' : 'شب'})
+                            </li>
                         ))}
                     </ul>
-                    <Button onClick={handleAddSuggestion} className="mt-4 w-full">
-                        <PlusCircle className="w-4 h-4 ml-2" />
+                    <Button onClick={handleAddSuggestion} className="mt-4 w-full" size="lg">
+                        <PlusCircle className="w-5 h-5 ml-2" />
                         افزودن به روتین من
                     </Button>
                 </div>
@@ -248,27 +272,28 @@ export const AIChat: React.FC<AIChatProps> = ({ isOpen, onClose, profile, curren
             </div>
           </ScrollArea>
           
-          <div className="border-t p-4">
-            <div className="flex gap-2">
+          <div className="border-t p-4 bg-slate-50/50 rounded-b-2xl">
+            <div className="relative">
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="سوالت رو بپرس..."
-                className="min-h-[60px] resize-none"
+                onKeyDown={handleKeyPress}
+                placeholder="سوال خود را اینجا بنویسید..."
+                className="min-h-[50px] resize-none rounded-full py-3 pl-14 pr-6 border-slate-300 focus:ring-primary"
                 disabled={isLoading}
+                rows={1}
               />
               <Button
                 onClick={sendMessage}
                 disabled={!input.trim() || isLoading}
-                size="lg"
-                className="px-6"
+                size="icon"
+                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full h-9 w-9"
               >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              اطلاعات ارائه شده صرفاً جنبه آموزشی دارد و جایگزین مشاوره پزشک نیست
+              اطلاعات شایلی صرفاً جنبه آموزشی دارد و جایگزین مشاوره پزشک نیست.
             </p>
           </div>
         </CardContent>

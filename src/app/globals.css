@@ -1,9 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Shaili Design System - Persian Skincare & Haircare App */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -47,7 +46,7 @@
     --gradient-hero: linear-gradient(135deg, hsl(15 85% 65%), hsl(25 80% 70%));
     --gradient-card: linear-gradient(145deg, hsl(20 60% 97%), hsl(15 50% 95%));
     --gradient-glow: linear-gradient(135deg, hsl(15 90% 75% / 0.3), hsl(25 85% 80% / 0.2));
-    
+
     /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -119,8 +118,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    @apply bg-background text-foreground font-sans;
   }
 
   html {
@@ -132,31 +130,31 @@
   .gradient-hero {
     background: var(--gradient-hero);
   }
-  
+
   .gradient-card {
     background: var(--gradient-card);
   }
-  
+
   .gradient-glow {
     background: var(--gradient-glow);
   }
-  
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
-  
+
   .shadow-card {
     box-shadow: var(--shadow-card);
   }
-  
+
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
   }
-  
+
   .transition-smooth {
     transition: var(--transition-smooth);
   }
-  
+
   .transition-bounce {
     transition: var(--transition-bounce);
   }

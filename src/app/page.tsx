@@ -1,9 +1,12 @@
+// src/app/page.tsx
+
 'use client';
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { HeroSection } from '@/components/hero-section';
-import { Dashboard } from '@/app/dashboard/page'; // مسیر کامپوننت داشبورد را به‌روز کنید
+// کامپوننت جدید را ایمپورت کنید
+import { LandingPage } from '@/components/landing-page';
+import { Dashboard } from '@/app/dashboard/page';
 import { useRouter } from 'next/navigation';
 
 const IndexPage = () => {
@@ -11,14 +14,16 @@ const IndexPage = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    // کاربر را به صفحه ورود هدایت می‌کند
-    router.push('/login');
+    router.push('/signup'); // کاربر را به صفحه ثبت‌نام هدایت می‌کنیم
   };
 
-  // تا زمانی که وضعیت احراز هویت در حال بررسی است، چیزی نمایش داده نمی‌شود
-  // (لودر اصلی در AuthProvider قرار دارد)
   if (isLoading) {
-    return null;
+    // می‌توانید یک کامپوننت لودینگ زیبا اینجا نمایش دهید
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        {/* Loader Component Here */}
+      </div>
+    );
   }
 
   // اگر کاربر وارد شده باشد، داشبورد را نمایش بده
@@ -26,8 +31,8 @@ const IndexPage = () => {
     return <Dashboard profile={user} />;
   }
 
-  // در غیر این صورت، صفحه اصلی را نمایش بده
-  return <HeroSection onGetStarted={handleGetStarted} />;
+  // در غیر این صورت، صفحه فرود کامل را نمایش بده
+  return <LandingPage onGetStarted={handleGetStarted} />;
 };
 
 export default IndexPage;

@@ -19,7 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				inter: ['Inter', 'sans-serif'],
+				// فونت Inter حذف و Vazirmatn به عنوان فونت پیش‌فرض (sans) تنظیم شده است
+				sans: ['Vazirmatn', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

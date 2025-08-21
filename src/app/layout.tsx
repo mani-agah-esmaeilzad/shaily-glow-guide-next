@@ -1,11 +1,14 @@
+// src/app/layout.tsx
+
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // فونت Inter را از next/font/google وارد کنید
+// دیگر نیازی به ایمپورت فونت از next/font/google نیست
+// import { Inter } from "next/font/google"; 
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 
-// فونت را با تنظیمات مورد نظر نمونه‌سازی کنید
-const inter = Inter({ subsets: ["latin"] });
+// این خط را حذف کنید
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Shaily Glow Guide",
@@ -19,8 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa" dir="rtl">
-      {/* کلاس تولید شده توسط next/font را به تگ body اضافه کنید */}
-      <body className={inter.className}>
+      {/* کلاس فونت را از تگ body حذف می‌کنیم تا از تنظیمات Tailwind استفاده شود */}
+      <body>
         <AuthProvider>
           {children}
           <Toaster />

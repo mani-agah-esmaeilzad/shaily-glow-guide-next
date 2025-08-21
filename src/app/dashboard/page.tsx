@@ -29,19 +29,17 @@ const TaskItem = ({ task, onToggle, onDelete }: { task: Task; onToggle: (id: str
   return (
     <div
       key={task.id}
-      className={`group flex items-center gap-4 p-4 rounded-xl border-l-4 transition-all duration-300 cursor-pointer ${
-        task.completed
+      className={`group flex items-center gap-4 p-4 rounded-xl border-l-4 transition-all duration-300 cursor-pointer ${task.completed
           ? 'bg-green-50 border-green-400'
           : 'bg-card hover:bg-muted/50 border-transparent'
-      }`}
+        }`}
       onClick={() => onToggle(task.id)}
     >
       <div
-        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-          task.completed
+        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${task.completed
             ? 'bg-green-500 border-green-500 text-white'
             : 'border-muted-foreground'
-        }`}
+          }`}
       >
         {task.completed && <Check size={14} />}
       </div>
@@ -56,7 +54,7 @@ const TaskItem = ({ task, onToggle, onDelete }: { task: Task; onToggle: (id: str
       {/* دکمه حذف */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
-           <Button
+          <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
@@ -113,9 +111,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
         if (data.tasks && Array.isArray(data.tasks)) {
           setTasks(data.tasks);
         } else {
-           const initialTasks: Task[] = [
-              { id: '1', title: 'شستشوی صورت با ژل ملایم', type: 'skin', completed: false, time: 'morning' },
-              { id: '2', title: 'استفاده از کرم ضدآفتاب', type: 'skin', completed: false, time: 'morning' },
+          const initialTasks: Task[] = [
+            { id: '1', title: 'شستشوی صورت با ژل ملایم', type: 'skin', completed: false, time: 'morning' },
+            { id: '2', title: 'استفاده از کرم ضدآفتاب', type: 'skin', completed: false, time: 'morning' },
           ];
           setTasks(initialTasks);
           await updateTasksInApi(initialTasks);
@@ -135,12 +133,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
     setTasks(updatedTasks);
     updateTasksInApi(updatedTasks);
   };
-  
+
   const addSuggestedTasks = (suggestedTasks: Omit<Task, 'id' | 'completed'>[]) => {
     const newTasks: Task[] = suggestedTasks.map(task => ({
-        ...task,
-        id: `ai-${Date.now()}-${Math.random()}`,
-        completed: false,
+      ...task,
+      id: `ai-${Date.now()}-${Math.random()}`,
+      completed: false,
     }));
     const updatedTasks = [...tasks, ...newTasks];
     setTasks(updatedTasks);
@@ -201,10 +199,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                 <CardDescription>پروفایل شما</CardDescription>
+                <CardDescription>پروفایل شما</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                 <div>
+                <div>
                   <h3 className="font-medium text-xs text-muted-foreground mb-1">نوع پوست</h3>
                   <Badge variant="outline">{profile.skinType}</Badge>
                 </div>
@@ -217,78 +215,78 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
           </div>
 
           <div className="mt-auto space-y-2">
-             <Button onClick={() => setShowAIChat(true)} variant="secondary" size="lg" className="w-full">
-                <MessageCircle className="ml-2 h-5 w-5"/> مشاوره با شایلی
+            <Button onClick={() => setShowAIChat(true)} variant="secondary" size="lg" className="w-full">
+              <MessageCircle className="ml-2 h-5 w-5" /> مشاوره با شایلی
             </Button>
             <Button onClick={logout} variant="ghost" size="lg" className="w-full text-muted-foreground">
-                <LogOut className="ml-2 h-5 w-5" /> خروج
+              <LogOut className="ml-2 h-5 w-5" /> خروج
             </Button>
           </div>
         </aside>
 
         {/* محتوای اصلی */}
         <main className="flex-1 p-8">
-            <header className="mb-8">
-                <p className="text-xl text-muted-foreground mt-2">امروز برای مراقبت از خودت آماده‌ای؟</p>
-            </header>
+          <header className="mb-8">
+            <p className="text-xl text-muted-foreground mt-2">امروز برای مراقبت از خودت آماده‌ای؟</p>
+          </header>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* ستون روتین روزانه */}
-                <div className="xl:col-span-2">
-                    <Card className="shadow-sm">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>روتین روزانه تو</CardTitle>
-                             <AddRoutineItem onAdd={addCustomTask} />
-                        </CardHeader>
-                        <CardContent>
-                            <Tabs defaultValue="morning" className="w-full">
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="morning"> صبح</TabsTrigger>
-                                    <TabsTrigger value="evening"> شب</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="morning" className="space-y-3 mt-6">
-                                    {morningTasks.length > 0 ? morningTasks.map(task => <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />) : <p className="text-center text-muted-foreground py-4">تسکی برای صبح نداری.</p>}
-                                </TabsContent>
-                                <TabsContent value="evening" className="space-y-3 mt-6">
-                                    {eveningTasks.length > 0 ? eveningTasks.map(task => <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />) : <p className="text-center text-muted-foreground py-4">تسکی برای شب نداری.</p>}
-                                </TabsContent>
-                            </Tabs>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* ستون کناری محتوا */}
-                <div className="space-y-8">
-                    <Card className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground">
-                        <CardHeader>
-                            <CardTitle>نکته امروز ✨</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm">نوشیدن آب کافی در طول روز، بهترین و ساده‌ترین راه برای حفظ شادابی و رطوبت پوستت است. سعی کن حداقل ۸ لیوان آب بنوشی.</p>
-                        </CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>آمار هفتگی</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center gap-4">
-                                <BarChart2 className="text-primary" size={28}/>
-                                <div>
-                                    <p className="font-bold text-xl">۷۵٪</p>
-                                    <p className="text-sm text-muted-foreground">پایبندی به روتین</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            {/* ستون روتین روزانه */}
+            <div className="xl:col-span-2">
+              <Card className="shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>روتین روزانه تو</CardTitle>
+                  <AddRoutineItem onAdd={addCustomTask} />
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue="morning" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="morning"> صبح</TabsTrigger>
+                      <TabsTrigger value="evening"> شب</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="morning" className="space-y-3 mt-6">
+                      {morningTasks.length > 0 ? morningTasks.map(task => <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />) : <p className="text-center text-muted-foreground py-4">تسکی برای صبح نداری.</p>}
+                    </TabsContent>
+                    <TabsContent value="evening" className="space-y-3 mt-6">
+                      {eveningTasks.length > 0 ? eveningTasks.map(task => <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />) : <p className="text-center text-muted-foreground py-4">تسکی برای شب نداری.</p>}
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
             </div>
+
+            {/* ستون کناری محتوا */}
+            <div className="space-y-8">
+              <Card className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground">
+                <CardHeader>
+                  <CardTitle>نکته امروز ✨</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">نوشیدن آب کافی در طول روز، بهترین و ساده‌ترین راه برای حفظ شادابی و رطوبت پوستت است. سعی کن حداقل ۸ لیوان آب بنوشی.</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>آمار هفتگی</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <BarChart2 className="text-primary" size={28} />
+                    <div>
+                      <p className="font-bold text-xl">۷۵٪</p>
+                      <p className="text-sm text-muted-foreground">پایبندی به روتین</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </main>
       </div>
 
-      <AIChat 
-        isOpen={showAIChat} 
-        onClose={() => setShowAIChat(false)} 
+      <AIChat
+        isOpen={showAIChat}
+        onClose={() => setShowAIChat(false)}
         profile={profile}
         currentTasks={tasks}
         onAddTasks={addSuggestedTasks}
@@ -296,3 +294,4 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
     </div>
   );
 };
+export default Dashboard;

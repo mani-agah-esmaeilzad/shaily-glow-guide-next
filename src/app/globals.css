@@ -1,60 +1,69 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /**
+   * Dadnoos-inspired theme for Shaily
+   * Using exact Dadnoos color scheme and design system
+  */
   :root {
-    /* Base colors - warm, skin-inspired palette */
-    --background: 20 40% 98%;
-    --foreground: 20 20% 15%;
+    /* New Shaily brand colors */
+    --background: 45 20% 92%; /* #F2EADF */
+    --foreground: 15 61% 13%; /* dark text */
 
-    --card: 20 60% 97%;
-    --card-foreground: 20 20% 15%;
+    --card: 45 25% 88%; /* #F2E1CB */
+    --card-foreground: 15 61% 13%;
 
-    --popover: 20 60% 97%;
-    --popover-foreground: 20 20% 15%;
+    --popover: 45 25% 88%; /* #F2E1CB */
+    --popover-foreground: 15 61% 13%;
 
-    /* Primary - warm peach/rose tones */
-    --primary: 15 85% 65%;
+    --primary: 95 15% 60%; /* #99B094 */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 15 90% 75%;
 
-    /* Secondary - soft mint/aloe tones */
-    --secondary: 150 40% 85%;
-    --secondary-foreground: 150 60% 25%;
+    --secondary: 18 25% 62%; /* #BE9382 */
+    --secondary-foreground: 0 0% 100%;
 
-    /* Accent - champagne/gold for premium feel */
-    --accent: 45 70% 80%;
-    --accent-foreground: 45 80% 25%;
+    --muted: 45 25% 90%;
+    --muted-foreground: 15 31% 33%;
 
-    /* Muted tones */
-    --muted: 20 30% 92%;
-    --muted-foreground: 20 25% 45%;
+    --accent: 35 35% 84%; /* #F0D0BE */
+    --accent-foreground: 15 61% 13%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 20 30% 88%;
-    --input: 20 30% 88%;
-    --ring: 15 85% 65%;
+    --border: 35 35% 84%; /* #F0D0BE */
+    --input: 45 25% 88%; /* #F2E1CB */
+    --ring: 95 15% 60%; /* #99B094 */
+
+    --radius: 0.75rem;
+
+    /* Custom color variables for new palette */
+    --sage-green: #99B094;
+    --warm-beige: #F2EADF;
+    --cream-light: #F2E1CB;
+    --peach-beige: #F0D0BE;
+    --dusty-rose: #BE9382;
+
 
     --radius: 1rem;
 
-    /* Custom gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(15 85% 65%), hsl(25 80% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(20 60% 97%), hsl(15 50% 95%));
-    --gradient-glow: linear-gradient(135deg, hsl(15 90% 75% / 0.3), hsl(25 85% 80% / 0.2));
+    /* Custom gradients with new palette */
+    --gradient-hero: linear-gradient(135deg, #99B094, #BE9382);
+    --gradient-card: linear-gradient(145deg, #F2E1CB, #F0D0BE);
+    --gradient-glow: linear-gradient(135deg, rgba(153, 176, 148, 0.3), rgba(190, 147, 130, 0.2));
 
     /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Shadows */
-    --shadow-glow: 0 8px 32px hsl(15 85% 65% / 0.15);
-    --shadow-card: 0 4px 20px hsl(20 20% 15% / 0.08);
-    --shadow-elegant: 0 10px 40px hsl(15 85% 65% / 0.2);
+    /* Shadows with new palette */
+    --shadow-glow: 0 8px 32px rgba(153, 176, 148, 0.15);
+    --shadow-card: 0 4px 20px rgba(190, 147, 130, 0.08);
+    --shadow-elegant: 0 10px 40px rgba(153, 176, 148, 0.2);
 
     --sidebar-background: 0 0% 98%;
 
@@ -74,33 +83,33 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 15 61% 8%; /* dark brown */
+    --foreground: 45 45% 96%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 15 61% 8%;
+    --card-foreground: 45 45% 96%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 15 61% 8%;
+    --popover-foreground: 45 45% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 295 74% 55%; /* lighter purple for dark mode */
+    --primary-foreground: 15 61% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 146 67% 45%; /* lighter green for dark mode */
+    --secondary-foreground: 15 61% 8%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 15 31% 15%;
+    --muted-foreground: 45 25% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 295 74% 55%;
+    --accent-foreground: 15 61% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 45 45% 96%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 15 31% 20%;
+    --input: 15 31% 20%;
+    --ring: 295 74% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -119,10 +128,176 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    font-feature-settings: "ss01", "ss02", "ss03", "ss04", "ss05", "ss06", "zero", "tnum";
   }
 
   html {
     direction: rtl;
+    scroll-behavior: smooth;
+  }
+
+  /* RTL fixes for specific components */
+  .ltr {
+    direction: ltr;
+  }
+}
+
+@layer components {
+  /* Beautiful gradient backgrounds using new brand colors */
+  .gradient-bg {
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--dusty-rose) 100%);
+  }
+
+  .gradient-bg-light {
+    background: linear-gradient(135deg, var(--warm-beige) 0%, var(--cream-light) 100%);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--dusty-rose) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Beautiful shadows using new brand colors */
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(153, 176, 148, 0.3);
+  }
+
+  .shadow-glow-lg {
+    box-shadow: 0 0 40px rgba(153, 176, 148, 0.4);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Animated borders using new brand colors */
+  .border-gradient {
+    background: linear-gradient(135deg, var(--sage-green), var(--dusty-rose));
+    padding: 2px;
+    border-radius: 0.75rem;
+  }
+
+  .border-gradient > * {
+    background: white;
+    border-radius: 0.5rem;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Pulse glow animation using new brand colors */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(153, 176, 148, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(153, 176, 148, 0.6); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Slide in animations */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  /* Beautiful button styles using new brand colors */
+  .btn-primary {
+    @apply text-white font-medium px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-glow;
+    background: var(--gradient-hero);
+  }
+
+  .btn-secondary {
+    @apply bg-white font-medium px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105;
+    color: var(--sage-green);
+    border: 2px solid rgba(153, 176, 148, 0.2);
+  }
+  
+  .btn-secondary:hover {
+    border-color: rgba(153, 176, 148, 0.4);
+    background-color: rgba(153, 176, 148, 0.05);
+  }
+
+  /* Beautiful input styles using new brand colors */
+  .input-beautiful {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 transition-all duration-300;
+    border: 2px solid rgba(153, 176, 148, 0.2);
+  }
+  
+  .input-beautiful:focus {
+    border-color: rgba(153, 176, 148, 0.4);
+    box-shadow: 0 0 0 4px rgba(153, 176, 148, 0.1);
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:transform hover:scale-105 hover:shadow-soft;
+  }
+
+  /* Text selection using new brand colors */
+  ::selection {
+    background: var(--sage-green);
+    color: white;
+  }
+
+  /* Scrollbar styling using new brand colors */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--warm-beige);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--gradient-hero);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--dusty-rose), var(--sage-green));
+  }
+
+  /* Glass effect for components */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }
 

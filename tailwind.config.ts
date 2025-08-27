@@ -23,6 +23,14 @@ export default {
 				sans: ['Vazirmatn', 'sans-serif'],
 			},
 			colors: {
+				// Custom Brand Colors
+				brand: {
+					primary: '#99B094',    // سبز اصلی
+					cream: '#F2EADF',      // کرم روشن
+					beige: '#F2E1CB',      // بژ
+					tan: '#F0D0BE',        // قهوه‌ای روشن
+					brown: '#BE9382',      // قهوه‌ای
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

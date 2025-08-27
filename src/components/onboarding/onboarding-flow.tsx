@@ -79,17 +79,45 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) =>
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">بیا خودتو معرفی کن</h1>
-          <p className="text-muted-foreground">تا بتونیم بهترین روتین رو برات بسازیم</p>
+    <div className="min-h-screen bg-gradient-to-br from-brand-cream to-brand-beige py-8 px-4" style={{ direction: 'rtl' }}>
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="w-16 h-16 bg-gradient-to-br from-brand-primary to-brand-brown rounded-2xl mx-auto mb-6 flex items-center justify-center">
+            <div className="w-8 h-8 bg-white rounded-lg"></div>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">بیایید با هم آشنا شویم</h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            کمک کنید تا روتین زیبایی شخصی مناسب نیازها و سبک زندگی یکتای شما بسازیم
+          </p>
         </div>
 
-        <ProgressSteps currentStep={currentStep} totalSteps={totalSteps} className="mb-8" />
+        {/* Progress Indicator */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-semibold text-brand-primary">{Math.round((currentStep / totalSteps) * 100)}% کامل شده</span>
+            <span className="text-sm font-semibold text-gray-600">مرحله {currentStep} از {totalSteps}</span>
+          </div>
+          <div className="w-full bg-brand-tan/30 rounded-full h-3">
+            <div 
+              className="bg-gradient-to-r from-brand-primary to-brand-brown h-3 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            ></div>
+          </div>
+        </div>
 
-        <div className="gradient-card rounded-3xl p-8 shadow-card">
-          {renderCurrentStep()}
+        {/* Main Content */}
+        <div className="bg-white/95 rounded-3xl shadow-2xl border border-brand-tan/20 overflow-hidden backdrop-blur-sm">
+          <div className="p-8 md:p-12">
+            {renderCurrentStep()}
+          </div>
+        </div>
+        
+        {/* Help Text */}
+        <div className="text-center mt-8">
+          <p className="text-sm text-gray-500">
+            اطلاعات شما امن است و فقط برای شخصی‌سازی تجربه شما استفاده خواهد شد
+          </p>
         </div>
       </div>
     </div>

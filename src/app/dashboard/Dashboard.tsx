@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AIChat } from '@/components/ai-chat';
 import { AvatarDisplay } from '@/components/ui/avatar-display';
 import { AddRoutineItem } from '@/components/add-routine-item';
-import { Loader2, LogOut, Check, Sparkles, MessageCircle, BarChart2, Trash2 } from 'lucide-react'; // آیکون سطل زباله اضافه شد
+import { Loader2, LogOut, Check, Sparkles, MessageCircle, BarChart2, Trash2, Calendar, TrendingUp, Star, Award } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import type { UserProfile, Task } from '@/types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -29,17 +29,27 @@ const TaskItem = ({ task, onToggle, onDelete }: { task: Task; onToggle: (id: str
   return (
     <div
       key={task.id}
-      className={`group flex items-center gap-4 p-4 rounded-xl border-l-4 transition-all duration-300 cursor-pointer ${task.completed
-          ? 'bg-green-50 border-green-400'
-          : 'bg-card hover:bg-muted/50 border-transparent'
+      className={`group flex items-center gap-4 p-4 rounded-2xl border-r-4 transition-all duration-300 cursor-pointer ${task.completed
+          ? 'border-r-4 shadow-soft'
+          : 'glass hover:shadow-soft border-transparent'
         }`}
+      style={{
+        background: task.completed 
+          ? 'linear-gradient(135deg, #99B094, #BE9382)'
+          : '#F2EADF',
+        borderRightColor: task.completed ? '#99B094' : 'transparent'
+      }}
       onClick={() => onToggle(task.id)}
     >
       <div
-        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${task.completed
-            ? 'bg-green-500 border-green-500 text-white'
+        className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${task.completed
+            ? 'text-white'
             : 'border-muted-foreground'
           }`}
+        style={{
+          backgroundColor: task.completed ? '#99B094' : 'transparent',
+          borderColor: task.completed ? '#99B094' : '#99B094'
+        }}
       >
         {task.completed && <Check size={14} />}
       </div>
@@ -48,7 +58,15 @@ const TaskItem = ({ task, onToggle, onDelete }: { task: Task; onToggle: (id: str
           {task.title}
         </p>
       </div>
-      <Badge variant={task.type === 'skin' ? 'default' : 'secondary'} className="text-xs">
+      <Badge 
+        variant="outline" 
+        className="text-xs rounded-2xl border-2 font-medium"
+        style={{
+          borderColor: task.type === 'skin' ? '#99B094' : '#BE9382',
+          color: task.type === 'skin' ? '#99B094' : '#BE9382',
+          backgroundColor: task.type === 'skin' ? 'rgba(153, 176, 148, 0.1)' : 'rgba(190, 147, 130, 0.1)'
+        }}
+      >
         {task.type === 'skin' ? 'پوست' : 'مو'}
       </Badge>
       {/* دکمه حذف */}
@@ -175,67 +193,133 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
   const eveningTasks = tasks.filter(task => task.time === 'evening');
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-gradient-to-br from-brand-cream to-brand-beige relative" style={{ direction: 'rtl' }}>
+      {/* Modern background pattern */}
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-20 right-20 w-40 h-40 bg-brand-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-20 w-32 h-32 bg-brand-brown/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-brand-tan/15 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      <div className="relative z-10 flex flex-col lg:flex-row">
         {/* ستون کناری (Sidebar) */}
-        <aside className="w-full lg:w-72 bg-white border-r border-slate-200 p-6 flex flex-col gap-8">
-          <div className="flex items-center gap-4">
+        <aside className="w-full lg:w-80 bg-white/90 backdrop-blur-xl border-l border-brand-tan/20 shadow-2xl p-8 flex flex-col gap-8">
+          <div className="flex items-center gap-4 p-6 bg-gradient-to-r from-brand-primary to-brand-brown rounded-3xl text-white">
             <AvatarDisplay gender={profile.gender} name={profile.name} size="lg" />
             <div>
-              <h2 className="font-bold text-lg">{profile.name}</h2>
-              <p className="text-sm text-muted-foreground">{profile.email}</p>
+              <h2 className="font-bold text-xl text-white">{profile.name}</h2>
+              <p className="text-sm text-white/80">{profile.email}</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>پیشرفت امروز</CardDescription>
-                <CardTitle className="text-2xl">{completedTasks} / {tasks.length} تسک</CardTitle>
+          <div className="space-y-6">
+            <Card className="bg-white/80 rounded-3xl border border-brand-tan/20 shadow-xl backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-brand-primary/10 rounded-2xl flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-brand-primary" />
+                  </div>
+                  <CardDescription className="text-gray-600 font-medium">پیشرفت امروز</CardDescription>
+                </div>
+                <CardTitle className="text-3xl font-bold text-brand-primary">{completedTasks} / {tasks.length} تسک</CardTitle>
               </CardHeader>
               <CardContent>
-                <Progress value={progressPercentage} className="h-2" />
+                <div className="bg-brand-tan/20 rounded-full h-4">
+                  <div 
+                    className="bg-gradient-to-r from-brand-primary to-brand-brown h-4 rounded-full transition-all duration-500"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">{Math.round(progressPercentage)}% تکمیل شده</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>پروفایل شما</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <h3 className="font-medium text-xs text-muted-foreground mb-1">نوع پوست</h3>
-                  <Badge variant="outline">{profile.skinType}</Badge>
+            <Card className="bg-white/80 rounded-3xl border border-brand-tan/20 shadow-xl backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 bg-brand-brown/10 rounded-2xl flex items-center justify-center">
+                    <Star className="w-5 h-5 text-brand-brown" />
+                  </div>
+                  <CardDescription className="text-gray-600 font-medium">پروفایل شما</CardDescription>
                 </div>
-                <div>
-                  <h3 className="font-medium text-xs text-muted-foreground mb-1">نوع مو</h3>
-                  <Badge variant="outline">{profile.hairType}</Badge>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-brand-cream/50 rounded-2xl">
+                  <h3 className="font-semibold text-sm text-gray-700 mb-2">نوع پوست</h3>
+                  <Badge className="bg-brand-primary/10 text-brand-primary border-brand-primary/20 rounded-xl px-3 py-1">{profile.skinType}</Badge>
+                </div>
+                <div className="p-4 bg-brand-beige/50 rounded-2xl">
+                  <h3 className="font-semibold text-sm text-gray-700 mb-2">نوع مو</h3>
+                  <Badge className="bg-brand-brown/10 text-brand-brown border-brand-brown/20 rounded-xl px-3 py-1">{profile.hairType}</Badge>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="mt-auto space-y-2">
-            <Button onClick={() => setShowAIChat(true)} variant="secondary" size="lg" className="w-full">
-              <MessageCircle className="ml-2 h-5 w-5" /> مشاوره با شایلی
+          <div className="mt-auto space-y-4">
+            <Button 
+              onClick={() => setShowAIChat(true)} 
+              size="lg" 
+              className="w-full py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-brand-primary to-brand-brown hover:from-brand-primary/90 hover:to-brand-brown/90 transition-all duration-300 transform hover:scale-[1.02] shadow-xl hover:shadow-2xl"
+            >
+              <MessageCircle className="ml-2 h-6 w-6" /> 
+              مشاوره با شایلی
             </Button>
-            <Button onClick={logout} variant="ghost" size="lg" className="w-full text-muted-foreground">
-              <LogOut className="ml-2 h-5 w-5" /> خروج
+            <Button 
+              onClick={logout} 
+              variant="outline" 
+              size="lg" 
+              className="w-full py-4 rounded-2xl font-semibold border-2 border-brand-tan/30 text-gray-600 hover:bg-brand-cream/50 hover:border-brand-tan/50 transition-all duration-300"
+            >
+              <LogOut className="ml-2 h-5 w-5" /> 
+              خروج
             </Button>
           </div>
         </aside>
 
         {/* محتوای اصلی */}
         <main className="flex-1 p-8">
-          <header className="mb-8">
-            <p className="text-xl text-muted-foreground mt-2">امروز برای مراقبت از خودت آماده‌ای؟</p>
+          <header className="mb-12">
+            <div className="bg-white/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm border border-brand-tan/20">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-brand-primary to-brand-brown rounded-2xl flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-brand-primary mb-2">سلام {profile.name}! 👋</h1>
+                  <p className="text-xl text-gray-600">امروز برای مراقبت از خودت آماده‌ای؟</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="bg-gradient-to-r from-brand-primary/10 to-brand-brown/10 rounded-2xl p-4 text-center">
+                  <Calendar className="w-6 h-6 text-brand-primary mx-auto mb-2" />
+                  <p className="font-semibold text-brand-primary">امروز</p>
+                  <p className="text-sm text-gray-600">{new Date().toLocaleDateString('fa-IR')}</p>
+                </div>
+                <div className="bg-gradient-to-r from-brand-brown/10 to-brand-tan/10 rounded-2xl p-4 text-center">
+                  <Award className="w-6 h-6 text-brand-brown mx-auto mb-2" />
+                  <p className="font-semibold text-brand-brown">امتیاز</p>
+                  <p className="text-sm text-gray-600">{completedTasks * 10} امتیاز</p>
+                </div>
+                <div className="bg-gradient-to-r from-brand-tan/10 to-brand-beige/10 rounded-2xl p-4 text-center">
+                  <TrendingUp className="w-6 h-6 text-brand-brown mx-auto mb-2" />
+                  <p className="font-semibold text-brand-brown">روند</p>
+                  <p className="text-sm text-gray-600">در حال بهبود</p>
+                </div>
+              </div>
+            </div>
           </header>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* ستون روتین روزانه */}
             <div className="xl:col-span-2">
-              <Card className="shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>روتین روزانه تو</CardTitle>
+              <Card className="bg-white/90 rounded-3xl border border-brand-tan/20 shadow-2xl backdrop-blur-sm">
+                <CardHeader className="flex flex-row items-center justify-between p-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-brand-primary to-brand-brown rounded-2xl flex items-center justify-center">
+                      <Check className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-3xl font-bold text-brand-primary">روتین روزانه تو</CardTitle>
+                  </div>
                   <AddRoutineItem onAdd={addCustomTask} />
                 </CardHeader>
                 <CardContent>
@@ -256,25 +340,42 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
             </div>
 
             {/* ستون کناری محتوا */}
-            <div className="space-y-8">
-              <Card className="bg-gradient-to-br from-primary/80 to-primary text-primary-foreground">
-                <CardHeader>
-                  <CardTitle>نکته امروز ✨</CardTitle>
+            <div className="space-y-6">
+              <Card className="bg-gradient-to-br from-brand-primary to-brand-brown rounded-3xl border border-brand-tan/20 shadow-2xl text-white">
+                <CardHeader className="p-6">
+                  <CardTitle className="text-white font-bold flex items-center gap-3 text-xl">
+                    <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    نکته امروز
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm">نوشیدن آب کافی در طول روز، بهترین و ساده‌ترین راه برای حفظ شادابی و رطوبت پوستت است. سعی کن حداقل ۸ لیوان آب بنوشی.</p>
+                <CardContent className="p-6 pt-0">
+                  <p className="text-white/90 leading-relaxed text-lg">
+                    نوشیدن آب کافی در طول روز، بهترین و ساده‌ترین راه برای حفظ شادابی و رطوبت پوستت است. سعی کن حداقل ۸ لیوان آب بنوشی.
+                  </p>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>آمار هفتگی</CardTitle>
+              
+              <Card className="bg-white/90 rounded-3xl border border-brand-tan/20 shadow-xl backdrop-blur-sm">
+                <CardHeader className="p-6">
+                  <CardTitle className="font-bold text-brand-primary flex items-center gap-3 text-xl">
+                    <div className="w-10 h-10 bg-brand-primary/10 rounded-2xl flex items-center justify-center">
+                      <BarChart2 className="h-5 w-5 text-brand-primary" />
+                    </div>
+                    آمار هفتگی
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-4">
-                    <BarChart2 className="text-primary" size={28} />
-                    <div>
-                      <p className="font-bold text-xl">۷۵٪</p>
-                      <p className="text-sm text-muted-foreground">پایبندی به روتین</p>
+                <CardContent className="p-6 pt-0">
+                  <div className="bg-gradient-to-r from-brand-cream to-brand-beige rounded-2xl p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-3xl text-brand-primary mb-1">۷۵٪</p>
+                        <p className="text-sm text-gray-600">پایبندی به روتین</p>
+                      </div>
+                      <div className="w-16 h-16 bg-brand-primary/10 rounded-full flex items-center justify-center">
+                        <TrendingUp className="w-8 h-8 text-brand-primary" />
+                      </div>
                     </div>
                   </div>
                 </CardContent>

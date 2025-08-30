@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   name: string;
@@ -11,9 +10,15 @@ export interface UserProfile {
   foreheadNose: string;
   sideNose: string;
   cheeks: string;
-    skinType?: string; 
+
+  // اضافه کن
+  skinType?: string;
   hairType?: string;
+  job?: string;
+  skinConcerns?: string[];
+  hairConcerns?: string[];
 }
+
 
 export interface Task {
   id: string;

@@ -11,6 +11,8 @@ export interface UserProfile {
   foreheadNose: string;
   sideNose: string;
   cheeks: string;
+    skinType?: string; 
+  hairType?: string;
 }
 
 export interface Task {

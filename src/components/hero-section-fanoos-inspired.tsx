@@ -1,5 +1,3 @@
-// src/components/hero-section-fanoos-inspired.tsx
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -14,8 +12,7 @@ export const HeroSectionFanoosInspired: React.FC<HeroSectionProps> = ({ onGetSta
     <section className="min-h-screen w-full flex items-center justify-center bg-background py-12 md:py-24">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          
-          {/* ستون تصویر سمت راست */}
+
           <div className="md:col-span-3 flex justify-center">
             <div className="relative w-full h-64 md:h-[450px] rounded-2xl overflow-hidden shadow-lg">
               <Image

@@ -11,12 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, Shield } from 'lucide-react';
+import { Loader2, Phone, Lock, Eye, EyeOff, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'لطفاً یک ایمیل معتبر وارد کنید' }),
+  mobile: z.string()
+    .regex(/^09[0-9]{9}$/, { message: 'لطفاً شماره موبایل معتبر وارد کنید (مثال: 09123456789)' }),
   password: z.string().min(1, { message: 'رمز عبور ضروری است' }),
 });
 
@@ -29,7 +30,7 @@ const LoginPage = () => {
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { mobile: '', password: '' },
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
@@ -46,7 +47,7 @@ const LoginPage = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'ایمیل یا رمز عبور نامعتبر');
+        throw new Error(result.error || 'شمارع موبایل یا رمز عبور نامعتبر');
       }
 
       login(result.user); // به‌روزرسانی فوری وضعیت کاربر
@@ -183,17 +184,18 @@ const LoginPage = () => {
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="mobile"
                       render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-semibold text-sm text-right">آدرس ایمیل</FormLabel>
+                        <FormLabel className="text-gray-700 font-semibold text-sm text-right">شماره موبایل</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Mail className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Phone className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                             <Input 
-                              placeholder="ایمیل خود را وارد کنید" 
+                              placeholder="شماره موبایل خود را وارد کنید (مثال: 09123456789)" 
                               {...field} 
                               className="pr-12 h-14 rounded-xl border-2 border-brand-tan/30 focus:border-brand-primary focus:ring-0 transition-all duration-300 text-lg text-right"
+                              maxLength={11}
                             />
                           </div>
                         </FormControl>

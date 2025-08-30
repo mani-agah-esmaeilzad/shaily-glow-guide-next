@@ -6,6 +6,7 @@ import { SkinTypeStep } from './skin-type-step';
 import { HairTypeStep } from './hair-type-step';
 import { CurrentRoutineStep } from './current-routine-step';
 import { ReviewStep } from './review-step';
+import { MobilePasswordStep } from './mobile-password-step';
 
 interface OnboardingData {
   name: string;
@@ -21,11 +22,12 @@ interface OnboardingData {
 }
 
 interface OnboardingFlowProps {
-  onComplete: (data: OnboardingData) => void;
+  onComplete: (data: OnboardingData & { mobile: string; password: string }) => void;
 }
 
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     name: '',
     age: '',
@@ -39,7 +41,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) =>
     currentHairRoutine: ''
   });
 
-  const totalSteps = 6;
+  const totalSteps = 7;
 
   const updateData = (newData: Partial<OnboardingData>) => {
     setData(prev => ({ ...prev, ...newData }));
@@ -48,9 +50,13 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) =>
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
-    } else {
-      onComplete(data);
     }
+  };
+
+  const handleMobilePasswordSubmit = (authData: { mobile: string; password: string }) => {
+    setIsLoading(true);
+    const finalData = { ...data, ...authData };
+    onComplete(finalData);
   };
 
   const prevStep = () => {
@@ -73,6 +79,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) =>
         return <CurrentRoutineStep data={data} updateData={updateData} onNext={nextStep} onPrev={prevStep} />;
       case 6:
         return <ReviewStep data={data} onNext={nextStep} onPrev={prevStep} />;
+      case 7:
+        return <MobilePasswordStep onNext={handleMobilePasswordSubmit} onPrev={prevStep} isLoading={isLoading} />;
       default:
         return null;
     }

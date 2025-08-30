@@ -10,14 +10,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { mobile, password } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
+    if (!mobile || !password) {
+      return NextResponse.json({ error: 'Mobile number and password are required.' }, { status: 400 });
     }
 
-    // Find the user by email
-    const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
+    // Find the user by mobile number
+    const [rows] = await pool.execute('SELECT * FROM users WHERE mobile = ?', [mobile]);
 
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // ------------------------------------------------
 
     // Create a JWT token
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+    const token = jwt.sign({ userId: user.id, mobile: user.mobile }, JWT_SECRET, {
       expiresIn: '7d', // Token expires in 7 days
     });
 

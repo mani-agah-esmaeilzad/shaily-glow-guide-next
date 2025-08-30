@@ -208,7 +208,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ profile }) => {
             <AvatarDisplay gender={profile.gender} name={profile.name} size="lg" />
             <div>
               <h2 className="font-bold text-xl text-white">{profile.name}</h2>
-              <p className="text-sm text-white/80">{profile.email}</p>
+              <p className="text-sm text-white/80">{profile.mobile}</p>
             </div>
           </div>
 

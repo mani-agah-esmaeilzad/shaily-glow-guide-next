@@ -6,16 +6,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name, age, job, gender, skinType, skinConcerns, hairType, hairConcerns } = await request.json();
+    const { mobile, password, name, age, job, gender, skinType, skinConcerns, hairType, hairConcerns } = await request.json();
 
-    if (!email || !password || !name) {
-      return NextResponse.json({ error: 'Email, password, and name are required.' }, { status: 400 });
+    if (!mobile || !password || !name) {
+      return NextResponse.json({ error: 'Mobile number, password, and name are required.' }, { status: 400 });
     }
 
     // Check if user already exists
-    const [existingUsers] = await pool.execute('SELECT id FROM users WHERE email = ?', [email]);
+    const [existingUsers] = await pool.execute('SELECT id FROM users WHERE mobile = ?', [mobile]);
     if (Array.isArray(existingUsers) && existingUsers.length > 0) {
-      return NextResponse.json({ error: 'User with this email already exists.' }, { status: 409 });
+      return NextResponse.json({ error: 'User with this mobile number already exists.' }, { status: 409 });
     }
 
     // Hash the password
@@ -23,13 +23,13 @@ export async function POST(request: Request) {
     const userId = uuidv4();
 
     const query = `
-      INSERT INTO users (id, email, password, name, age, job, gender, skinType, skinConcerns, hairType, hairConcerns)
+      INSERT INTO users (id, mobile, password, name, age, job, gender, skinType, skinConcerns, hairType, hairConcerns)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     await pool.execute(query, [
       userId,
-      email,
+      mobile,
       hashedPassword,
       name,
       age,

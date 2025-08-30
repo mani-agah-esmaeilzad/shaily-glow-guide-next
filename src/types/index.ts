@@ -2,14 +2,15 @@
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
+  mobile: string;
   age: string;
-  job: string;
   gender: string;
-  skinType: string;
-  skinConcerns: string[];
-  hairType: string;
-  hairConcerns: string[];
+  comedones: string;
+  redPimples: string;
+  fineLines: string;
+  foreheadNose: string;
+  sideNose: string;
+  cheeks: string;
 }
 
 export interface Task {

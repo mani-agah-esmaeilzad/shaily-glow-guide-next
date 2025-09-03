@@ -58,7 +58,7 @@ const generateSystemInstruction = (profile: UserProfile, tasks: Task[]): string 
   let profileInfo = `\n\n### اطلاعات کاربر فعلی:\n`;
   profileInfo += `- نوع پوست: ${profile.skinType}\n- نگرانی‌های پوستی: ${profile.skinConcerns?.join('، ') || 'ندارد'}\n`;
   profileInfo += `- نوع مو: ${profile.hairType}\n- نگرانی‌های مو: ${profile.hairConcerns?.join('، ') || 'ندارد'}\n`;
-
+    
   if (tasks.length > 0) {
     profileInfo += `\n### روتین فعلی کاربر:\n`;
     tasks.forEach(task => {

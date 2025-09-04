@@ -31,10 +31,9 @@ export async function GET(request: Request) {
 
     const user = rows[0] as any;
 
-    // --- FIX: Parse JSON strings back into arrays ---
+    // Parse JSON strings back into arrays, checking if they exist
     user.skinConcerns = user.skinConcerns ? JSON.parse(user.skinConcerns) : [];
     user.hairConcerns = user.hairConcerns ? JSON.parse(user.hairConcerns) : [];
-    // ------------------------------------------------
 
     // Return user info (without the password)
     const { password: _, ...userWithoutPassword } = user;

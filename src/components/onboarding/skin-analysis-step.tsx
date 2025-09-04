@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -5,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { User, Calendar, Zap, Eye, Droplets, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area'; // ایمپورت ScrollArea
 
 interface SkinAnalysisData {
   gender: string;
@@ -25,6 +28,7 @@ interface SkinAnalysisStepProps {
 }
 
 const questions = [
+  // ... (محتوای questions بدون تغییر باقی می‌ماند)
   {
     id: 'gender',
     title: 'جنسیت شما کدام است؟',
@@ -107,7 +111,7 @@ const questions = [
   {
     id: 'cheeks',
     title: 'وضعیت پوست گونه‌های شما کدام است؟',
-    description: 'گونه‌ها بیشترین سطح صورت را تشکیل می‌دهند و نشان‌دهنده نوع کلی پوست هستند',
+    description: 'گونه‌ها بیشترین سطح صورت را تشکیل می‌ده و نشان‌دهنده نوع کلی پوست هستند',
     icon: Droplets,
     options: [
       { value: 'oily', label: 'چرب' },
@@ -122,11 +126,9 @@ export const SkinAnalysisStep: React.FC<SkinAnalysisStepProps> = ({ data, update
   const question = questions[currentQuestion];
   
   const currentValue = data[question.id as keyof SkinAnalysisData];
-  const totalQuestions = questions.length;
-  const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
   const handleNext = () => {
-    if (currentQuestion < totalQuestions - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       onNext();
@@ -144,50 +146,32 @@ export const SkinAnalysisStep: React.FC<SkinAnalysisStepProps> = ({ data, update
   const isValid = currentValue !== '';
 
   return (
-    <div className="space-y-8">
+    // تغییر در اینجا: استفاده از flexbox برای پر کردن ارتفاع موجود
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="w-20 h-20 bg-gradient-to-br from-brand-primary/20 to-brand-brown/20 rounded-2xl mx-auto flex items-center justify-center">
-          <question.icon className="w-10 h-10 text-brand-primary" />
+      <div className="text-center space-y-2">
+        <div className="w-16 h-16 bg-gradient-to-br from-brand-primary/20 to-brand-brown/20 rounded-2xl mx-auto flex items-center justify-center">
+          <question.icon className="w-8 h-8 text-brand-primary" />
         </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between mb-2">
-            <Badge variant="secondary" className="text-xs">
-              سوال {currentQuestion + 1} از {totalQuestions}
-            </Badge>
-            <div className="text-sm font-medium text-brand-primary">
-              {Math.round(progress)}% تکمیل شده
-            </div>
-          </div>
-          <div className="w-full bg-brand-tan/30 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-brand-primary to-brand-brown h-2 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
+        <div className="space-y-1">
+            <h2 className="text-xl font-bold text-gray-900 leading-tight">
+                {question.title}
+            </h2>
+            <p className="text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                {question.description}
+            </p>
         </div>
       </div>
 
-      {/* Question Content */}
-      <Card className="border-2 border-brand-tan/20 shadow-lg">
-        <CardContent className="p-8">
-          <div className="space-y-6">
-            <div className="text-center space-y-3">
-              <h2 className="text-2xl font-bold text-gray-900 leading-relaxed">
-                {question.title}
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                {question.description}
-              </p>
-            </div>
-
-            <div className="space-y-4 max-w-2xl mx-auto">
+      {/* Question Content with ScrollArea */}
+      <div className="flex-1 my-4 overflow-hidden">
+          <ScrollArea className="h-full pr-4">
               <RadioGroup
                 value={currentValue}
                 onValueChange={(value) => updateData({ [question.id]: value })}
                 className="space-y-3"
               >
-                {question.options.map((option, index) => (
+                {question.options.map((option) => (
                   <div 
                     key={option.value} 
                     className={`flex items-center space-x-4 space-x-reverse p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-md ${
@@ -203,52 +187,38 @@ export const SkinAnalysisStep: React.FC<SkinAnalysisStepProps> = ({ data, update
                     />
                     <Label 
                       htmlFor={`${question.id}-${option.value}`} 
-                      className={`flex-1 font-medium cursor-pointer text-lg ${
-                        currentValue === option.value ? 'text-brand-primary' : 'text-gray-700'
-                      }`}
+                      className="flex-1 font-medium cursor-pointer text-base"
                     >
                       {option.label}
                     </Label>
                   </div>
                 ))}
               </RadioGroup>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </ScrollArea>
+      </div>
+
 
       {/* Navigation */}
-      <div className="flex gap-4 pt-6">
+      <div className="flex gap-4 pt-4 border-t">
         <Button
           onClick={handlePrev}
           variant="outline"
           size="lg"
-          className="flex-1 h-12 font-semibold border-2 border-brand-tan/30 hover:border-brand-primary/40 transition-all duration-300"
+          className="flex-1 h-12 font-semibold"
         >
           <ArrowRight className="w-5 h-5 ml-2" />
-          {currentQuestion === 0 ? 'مرحله قبل' : 'سوال قبل'}
+          {currentQuestion === 0 ? 'بازگشت' : 'سوال قبل'}
         </Button>
         
         <Button
           onClick={handleNext}
           disabled={!isValid}
           size="lg"
-          className={`flex-1 h-12 font-semibold transition-all duration-300 ${
-            isValid 
-              ? 'bg-gradient-to-r from-brand-primary to-brand-brown hover:from-brand-primary/90 hover:to-brand-brown/90 hover:shadow-lg transform hover:scale-[1.02]' 
-              : 'bg-gray-300 cursor-not-allowed'
-          }`}
+          className="flex-1 h-12 font-semibold"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          {currentQuestion === totalQuestions - 1 ? 'تکمیل آنالیز' : 'سوال بعد'}
+          {currentQuestion === questions.length - 1 ? 'تکمیل آنالیز' : 'سوال بعد'}
         </Button>
-      </div>
-
-      {/* Help Text */}
-      <div className="text-center pt-4">
-        <p className="text-sm text-gray-500">
-          پاسخ شما کاملاً محرمانه بوده و فقط برای تجزیه و تحلیل بهتر نوع پوست استفاده خواهد شد
-        </p>
       </div>
     </div>
   );

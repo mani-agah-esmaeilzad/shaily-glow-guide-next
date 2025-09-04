@@ -1,20 +1,16 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus } from 'lucide-react';
-
-interface RoutineItem {
-  id: string;
-  title: string;
-  type: 'skin' | 'hair';
-  time: 'morning' | 'evening';
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { PlusCircle } from 'lucide-react';
+import type { Task } from '@/types';
 
 interface AddRoutineItemProps {
-  onAdd: (item: Omit<RoutineItem, 'id'>) => void;
+  onAdd: (task: Omit<Task, 'id' | 'completed'>) => void;
 }
 
 export const AddRoutineItem: React.FC<AddRoutineItemProps> = ({ onAdd }) => {
@@ -25,14 +21,8 @@ export const AddRoutineItem: React.FC<AddRoutineItemProps> = ({ onAdd }) => {
 
   const handleSubmit = () => {
     if (title.trim()) {
-      onAdd({
-        title: title.trim(),
-        type,
-        time,
-      });
+      onAdd({ title, type, time });
       setTitle('');
-      setType('skin');
-      setTime('morning');
       setOpen(false);
     }
   };
@@ -40,61 +30,49 @@ export const AddRoutineItem: React.FC<AddRoutineItemProps> = ({ onAdd }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full border-dashed">
-          <Plus className="h-4 w-4 mr-2" />
-          اضافه کردن مرحله جدید
+        <Button size="lg" className="w-full">
+          <PlusCircle className="h-5 w-5 ml-2" />
+          افزودن تسک جدید
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>مرحله جدید روتین</DialogTitle>
+          <DialogTitle>افزودن تسک جدید به روتین</DialogTitle>
+          {/* اصلاح شد: اضافه کردن توضیحات برای دسترسی‌پذیری */}
+          <DialogDescription>یک کار جدید برای روتین صبح یا شب خود تعریف کنید.</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 pt-4">
+        <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="title">عنوان مرحله</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="مثل: شستشوی صورت، ماساژ پوست..."
-            />
+            <Label htmlFor="title">عنوان تسک</Label>
+            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثال: استفاده از کرم ضدآftab" />
           </div>
-          
-          <div className="space-y-2">
-            <Label>نوع مراقبت</Label>
-            <Select value={type} onValueChange={(value: 'skin' | 'hair') => setType(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="skin">پوست</SelectItem>
-                <SelectItem value="hair">مو</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label>زمان انجام</Label>
-            <Select value={time} onValueChange={(value: 'morning' | 'evening') => setTime(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="morning">صبح</SelectItem>
-                <SelectItem value="evening">شب</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex gap-2 pt-4">
-            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
-              لغو
-            </Button>
-            <Button onClick={handleSubmit} disabled={!title.trim()} className="flex-1">
-              اضافه کردن
-            </Button>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>نوع</Label>
+              <Select value={type} onValueChange={(value: 'skin' | 'hair') => setType(value)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="skin">پوست</SelectItem>
+                  <SelectItem value="hair">مو</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>زمان</Label>
+              <Select value={time} onValueChange={(value: 'morning' | 'evening') => setTime(value)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="morning">صبح</SelectItem>
+                  <SelectItem value="evening">شب</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>لغو</Button>
+          <Button onClick={handleSubmit}>افزودن</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

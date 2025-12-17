@@ -10,6 +10,18 @@ interface JwtPayload {
   userId: string;
 }
 
+const parseArrayField = (value: any) => {
+  if (!value) return [];
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return [];
+    }
+  }
+  return Array.isArray(value) ? value : [];
+};
+
 export async function GET(request: Request) {
   try {
     const cookieStore = cookies();
@@ -23,7 +35,7 @@ export async function GET(request: Request) {
     const decoded = jwt.verify(token.value, JWT_SECRET) as JwtPayload;
 
     // Fetch user data from the database
-    const [rows] = await pool.execute('SELECT * FROM users WHERE id = ?', [decoded.userId]);
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
 
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json({ error: 'User not found.' }, { status: 404 });
@@ -32,8 +44,8 @@ export async function GET(request: Request) {
     const user = rows[0] as any;
 
     // Parse JSON strings back into arrays, checking if they exist
-    user.skinConcerns = user.skinConcerns ? JSON.parse(user.skinConcerns) : [];
-    user.hairConcerns = user.hairConcerns ? JSON.parse(user.hairConcerns) : [];
+    user.skinConcerns = parseArrayField(user.skinConcerns ?? user.skinconcerns);
+    user.hairConcerns = parseArrayField(user.hairConcerns ?? user.hairconcerns);
 
     // Return user info (without the password)
     const { password: _, ...userWithoutPassword } = user;

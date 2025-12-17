@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import { RowDataPacket } from 'mysql2';
 
-interface LogRow extends RowDataPacket {
+interface LogRow {
     logDate: string;
     pointsEarned: number;
 }
@@ -14,9 +13,9 @@ export async function GET(
     const { userId } = params;
     try {
         
-        const [rows] = await pool.execute<LogRow[]>(
+        const { rows } = await pool.query<LogRow>(
             `SELECT logDate, pointsEarned FROM daily_gamification_logs 
-             WHERE userId = ? AND logDate >= CURDATE() - INTERVAL 6 DAY 
+             WHERE userId = $1 AND logDate >= CURRENT_DATE - INTERVAL '6 days'
              ORDER BY logDate ASC`,
             [userId]
         );
@@ -27,7 +26,7 @@ export async function GET(
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toISOString().split('T')[0];
-            const dayData = (rows as LogRow[]).find(
+            const dayData = rows.find(
                 (row) => new Date(row.logDate).toISOString().split('T')[0] === dateStr
             );
             last7DaysData.push({

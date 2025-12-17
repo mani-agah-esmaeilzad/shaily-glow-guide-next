@@ -10,11 +10,14 @@ export async function GET(request: Request, { params }: { params: { userId: stri
     }
 
     try {
-        const [rows]: any[] = await pool.execute('SELECT * FROM user_gamification WHERE userId = ?', [userId]);
+        const { rows } = await pool.query('SELECT * FROM user_gamification WHERE userId = $1', [userId]);
 
         // اگر رکوردی برای کاربر وجود نداشت، یکی برای او ایجاد می‌کنیم
         if (rows.length === 0) {
-            await pool.execute('INSERT INTO user_gamification (userId, points, streak, lastCompletedDate) VALUES (?, 0, 0, NULL)', [userId]);
+            await pool.query(
+                'INSERT INTO user_gamification (userId, points, streak, lastCompletedDate) VALUES ($1, 0, 0, NULL)',
+                [userId]
+            );
             return NextResponse.json({ userId, points: 0, streak: 0, lastCompletedDate: null });
         }
 
@@ -35,12 +38,12 @@ export async function POST(request: Request, { params }: { params: { userId: str
     }
 
     try {
-        const [rows]: any[] = await pool.execute('SELECT * FROM user_gamification WHERE userId = ?', [userId]);
+        const { rows } = await pool.query('SELECT * FROM user_gamification WHERE userId = $1', [userId]);
 
         let stats;
         if (rows.length === 0) {
             stats = { userId, points: 0, streak: 0, lastCompletedDate: null };
-            await pool.execute('INSERT INTO user_gamification (userId) VALUES (?)', [userId]);
+            await pool.query('INSERT INTO user_gamification (userId) VALUES ($1)', [userId]);
         } else {
             stats = rows[0];
         }
@@ -70,14 +73,17 @@ export async function POST(request: Request, { params }: { params: { userId: str
             stats.lastCompletedDate = todayStr;
 
             // ذخیره اطلاعات جدید در جدول اصلی
-            await pool.execute(
-                'UPDATE user_gamification SET points = ?, streak = ?, lastCompletedDate = ? WHERE userId = ?',
+            await pool.query(
+                'UPDATE user_gamification SET points = $1, streak = $2, lastCompletedDate = $3 WHERE userId = $4',
                 [stats.points, stats.streak, stats.lastCompletedDate, userId]
             );
 
             // ذخیره امتیاز امروز در جدول گزارش‌ها برای نمودار
-            await pool.execute(
-                'INSERT INTO daily_gamification_logs (userId, logDate, pointsEarned) VALUES (?, ?, 5) ON DUPLICATE KEY UPDATE pointsEarned = pointsEarned + 5',
+            await pool.query(
+                `INSERT INTO daily_gamification_logs (userId, logDate, pointsEarned)
+                 VALUES ($1, $2, 5)
+                 ON CONFLICT (userId, logDate)
+                 DO UPDATE SET pointsEarned = daily_gamification_logs.pointsEarned + EXCLUDED.pointsEarned`,
                 [userId, todayStr]
             );
         }

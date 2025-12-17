@@ -15,10 +15,10 @@ export async function POST(request: Request) {
 
     const query = `
       INSERT INTO users (id, name, age, job, gender, skinType, skinConcerns, hairType, hairConcerns)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `;
     
-    await pool.execute(query, [
+    await pool.query(query, [
       id, 
       name, 
       age, 

@@ -2,8 +2,23 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const parseArrayField = (value: any) => {
+    if (!value) return [];
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return [];
+        }
+    }
+    return Array.isArray(value) ? value : [];
+};
+
 // این تابع یک prompt برای هوش مصنوعی می‌سازد تا کارت‌های فید را تولید کند
 const generateDiscoveryFeedPrompt = (userProfile: any): string => {
+    const skinConcerns = parseArrayField(userProfile.skinConcerns ?? userProfile.skinconcerns);
+    const hairConcerns = parseArrayField(userProfile.hairConcerns ?? userProfile.hairconcerns);
+
     return `
     You are "Shaily", a friendly and knowledgeable AI skincare and haircare assistant.
     Your task is to generate a personalized "Daily Discovery Feed" for a user.
@@ -13,8 +28,8 @@ const generateDiscoveryFeedPrompt = (userProfile: any): string => {
     Here is the user's profile:
     - Gender: ${userProfile.gender || 'Not specified'}
     - Age Range: ${userProfile.age || 'Not specified'}
-    - Skin Concerns: ${userProfile.skinConcerns ? JSON.parse(userProfile.skinConcerns).join(', ') : 'None'}
-    - Hair Concerns: ${userProfile.hairConcerns ? JSON.parse(userProfile.hairConcerns).join(', ') : 'None'}
+    - Skin Concerns: ${skinConcerns.length ? skinConcerns.join(', ') : 'None'}
+    - Hair Concerns: ${hairConcerns.length ? hairConcerns.join(', ') : 'None'}
     - Skin Analysis: 
         - Comedones: ${userProfile.comedones || 'Not specified'}
         - Red Pimples: ${userProfile.redPimples || 'Not specified'}
@@ -52,7 +67,7 @@ const generateDiscoveryFeedPrompt = (userProfile: any): string => {
 export async function GET(request: Request, { params }: { params: { userId: string } }) {
     const { userId } = params;
     try {
-        const [userRows]: any[] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
+        const { rows: userRows } = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
         if (userRows.length === 0) {
             return NextResponse.json({ error: 'User not found.' }, { status: 404 });
         }

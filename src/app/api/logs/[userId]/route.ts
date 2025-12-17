@@ -6,8 +6,8 @@ export async function GET(request: Request, { params }: { params: { userId: stri
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date') || new Date().toISOString().split('T')[0];
     try {
-        const [rows] = await pool.execute('SELECT * FROM daily_logs WHERE userId = ? AND logDate = ?', [userId, date]);
-        if (Array.isArray(rows) && rows.length > 0) {
+        const { rows } = await pool.query('SELECT * FROM daily_logs WHERE userId = $1 AND logDate = $2', [userId, date]);
+        if (rows.length > 0) {
             return NextResponse.json(rows[0]);
         }
         return NextResponse.json(null); // No log for this date
@@ -20,8 +20,13 @@ export async function POST(request: Request, { params }: { params: { userId: str
     const { userId } = params;
     const { logDate, sleepHours, waterIntake, stressLevel } = await request.json();
     try {
-        await pool.execute(
-            'INSERT INTO daily_logs (userId, logDate, sleepHours, waterIntake, stressLevel) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE sleepHours = VALUES(sleepHours), waterIntake = VALUES(waterIntake), stressLevel = VALUES(stressLevel)',
+        await pool.query(
+            `INSERT INTO daily_logs (userId, logDate, sleepHours, waterIntake, stressLevel)
+             VALUES ($1, $2, $3, $4, $5)
+             ON CONFLICT (userId, logDate)
+             DO UPDATE SET sleepHours = EXCLUDED.sleepHours,
+                           waterIntake = EXCLUDED.waterIntake,
+                           stressLevel = EXCLUDED.stressLevel`,
             [userId, logDate, sleepHours, waterIntake, stressLevel]
         );
         return NextResponse.json({ message: 'Log saved successfully.' });

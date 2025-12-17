@@ -2,8 +2,23 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const parseArrayField = (value: any) => {
+    if (!value) return [];
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return [];
+        }
+    }
+    return Array.isArray(value) ? value : [];
+};
+
 // این تابع یک prompt برای هوش مصنوعی می‌سازد تا مواد اولیه را تولید کند
 const generateIngredientsPrompt = (userProfile: any, dailyLog: any): string => {
+    const skinConcerns = parseArrayField(userProfile.skinConcerns ?? userProfile.skinconcerns);
+    const hairConcerns = parseArrayField(userProfile.hairConcerns ?? userProfile.hairconcerns);
+
     let logInfo = "The user did not log their lifestyle today.";
     if (dailyLog) {
         logInfo = `
@@ -19,8 +34,8 @@ const generateIngredientsPrompt = (userProfile: any, dailyLog: any): string => {
     The content must be in Persian (Farsi).
 
     Here is the user's profile:
-    - Skin Concerns: ${userProfile.skinConcerns ? JSON.parse(userProfile.skinConcerns).join(', ') : 'None'}
-    - Hair Concerns: ${userProfile.hairConcerns ? JSON.parse(userProfile.hairConcerns).join(', ') : 'None'}
+    - Skin Concerns: ${skinConcerns.length ? skinConcerns.join(', ') : 'None'}
+    - Hair Concerns: ${hairConcerns.length ? hairConcerns.join(', ') : 'None'}
     
     Here is the user's log for today:
     ${logInfo}
@@ -51,7 +66,7 @@ export async function GET(request: Request, { params }: { params: { userId: stri
     const { userId } = params;
     try {
         // Fetch user profile
-        const [userRows]: any[] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
+        const { rows: userRows } = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
         if (userRows.length === 0) {
             return NextResponse.json({ error: 'User not found.' }, { status: 404 });
         }
@@ -59,7 +74,10 @@ export async function GET(request: Request, { params }: { params: { userId: stri
 
         // Fetch today's log
         const today = new Date().toISOString().split('T')[0];
-        const [logRows]: any[] = await pool.execute('SELECT * FROM daily_logs WHERE userId = ? AND logDate = ?', [userId, today]);
+        const { rows: logRows } = await pool.query(
+            'SELECT * FROM daily_logs WHERE userId = $1 AND logDate = $2',
+            [userId, today]
+        );
         const dailyLog = logRows.length > 0 ? logRows[0] : null;
 
         // Call AI to generate ingredients

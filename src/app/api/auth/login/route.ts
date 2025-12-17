@@ -8,6 +8,18 @@ import { cookies } from 'next/headers';
 // یک کلید امن برای توکن خود در فایل .env.local تعریف کنید
 const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key';
 
+const parseArrayField = (value: any) => {
+  if (!value) return [];
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return [];
+    }
+  }
+  return Array.isArray(value) ? value : [];
+};
+
 export async function POST(request: Request) {
   try {
     const { mobile, password } = await request.json();
@@ -17,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     // Find the user by mobile number
-    const [rows] = await pool.execute('SELECT * FROM users WHERE mobile = ?', [mobile]);
+    const { rows } = await pool.query('SELECT * FROM users WHERE mobile = $1', [mobile]);
 
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
@@ -33,8 +45,8 @@ export async function POST(request: Request) {
     }
 
     // --- FIX: Parse JSON strings back into arrays ---
-    user.skinConcerns = user.skinConcerns ? JSON.parse(user.skinConcerns) : [];
-    user.hairConcerns = user.hairConcerns ? JSON.parse(user.hairConcerns) : [];
+    user.skinConcerns = parseArrayField(user.skinConcerns ?? user.skinconcerns);
+    user.hairConcerns = parseArrayField(user.hairConcerns ?? user.hairconcerns);
     // ------------------------------------------------
 
     // Create a JWT token

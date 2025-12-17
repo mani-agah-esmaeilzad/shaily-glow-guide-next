@@ -4,7 +4,7 @@ import pool from '@/lib/db';
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
     const { slug } = params;
     try {
-        const [rows]: any[] = await pool.execute('SELECT * FROM posts WHERE slug = ?', [slug]);
+        const { rows } = await pool.query('SELECT * FROM posts WHERE slug = $1', [slug]);
         if (rows.length === 0) {
             return NextResponse.json({ error: 'Post not found.' }, { status: 404 });
         }

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'نام، شماره موبایل و رمز عبور الزامی است.' }, { status: 400 });
     }
 
-    const [existingUsers]: any[] = await pool.execute('SELECT id FROM users WHERE mobile = ?', [mobile]);
+    const { rows: existingUsers } = await pool.query('SELECT id FROM users WHERE mobile = $1', [mobile]);
     if (existingUsers.length > 0) {
       return NextResponse.json({ error: 'کاربری با این شماره موبایل از قبل وجود دارد.' }, { status: 409 });
     }
@@ -31,10 +31,10 @@ export async function POST(request: Request) {
         name, avatarUrl, 
         age, gender, comedones, redPimples, fineLines, foreheadNose, sideNose, cheeks
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
     `;
 
-    await pool.execute(query, [
+    await pool.query(query, [
       userId,
       mobile,
       hashedPassword,

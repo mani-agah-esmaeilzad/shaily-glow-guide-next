@@ -5,15 +5,27 @@ import pool from '@/lib/db';
 // این خط کش را غیرفعال می‌کند و همیشه اطلاعات تازه را برمی‌گرداند
 export const dynamic = 'force-dynamic';
 
+const parseTasks = (value: any) => {
+    if (!value) return [];
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return [];
+        }
+    }
+    return Array.isArray(value) ? value : [];
+};
+
 // دریافت روتین یک کاربر
 export async function GET(request: Request, { params }: { params: { userId: string } }) {
     const { userId } = params;
     try {
-        const [rows] = await pool.execute('SELECT * FROM routines WHERE userId = ?', [userId]);
+        const { rows } = await pool.query('SELECT * FROM routines WHERE userId = $1', [userId]);
 
         if (Array.isArray(rows) && rows.length > 0) {
-            const routine = rows[0] as { userId: string, tasks: string };
-            return NextResponse.json({ ...routine, tasks: JSON.parse(routine.tasks || '[]') });
+            const routine = rows[0] as { userId: string, tasks: any };
+            return NextResponse.json({ ...routine, tasks: parseTasks(routine.tasks) });
         } else {
             return NextResponse.json({ userId, tasks: [] }); 
         }
@@ -35,20 +47,20 @@ export async function POST(request: Request, { params }: { params: { userId: str
         console.log(`Attempting to update routine for user: ${userId}`);
 
         // 1. ابتدا بررسی می‌کنیم که آیا روتینی برای این کاربر وجود دارد یا نه
-        const [existing] = await pool.execute('SELECT userId FROM routines WHERE userId = ?', [userId]);
+        const { rows: existing } = await pool.query('SELECT userId FROM routines WHERE userId = $1', [userId]);
 
         let query = '';
         if (Array.isArray(existing) && existing.length > 0) {
             // اگر وجود داشت، آن را UPDATE می‌کنیم
             console.log(`Routine found for user ${userId}. Updating...`);
-            query = `UPDATE routines SET tasks = ? WHERE userId = ?`;
-            const [result] = await pool.execute(query, [JSON.stringify(tasks), userId]);
+            query = `UPDATE routines SET tasks = $1 WHERE userId = $2`;
+            const result = await pool.query(query, [JSON.stringify(tasks), userId]);
             console.log('Routine UPDATE result:', result);
         } else {
             // اگر وجود نداشت، آن را INSERT می‌کنیم
             console.log(`No routine found for user ${userId}. Inserting...`);
-            query = `INSERT INTO routines (userId, tasks) VALUES (?, ?)`;
-            const [result] = await pool.execute(query, [userId, JSON.stringify(tasks)]);
+            query = `INSERT INTO routines (userId, tasks) VALUES ($1, $2)`;
+            const result = await pool.query(query, [userId, JSON.stringify(tasks)]);
             console.log('Routine INSERT result:', result);
         }
         
